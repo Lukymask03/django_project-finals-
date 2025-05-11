@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Panel - WWE Champion Predictor</title>
+</head>
+<body>
+    <h1>Welcome to Your User Panel, {{ user.username }}!</h1>
+
+
+    <p><a href="{% url 'predictor:user_panel' %}">Go to User Panel</a></p>
+
+    <p>Here you can see your recent predictions and manage your profile.</p>
+
+    <!-- For example, display a list of recent predictions -->
+    <h2>Your Recent Predictions:</h2>
+    <ul>
+        {% for prediction in recent_predictions %}
+            <li>{{ prediction.wrestler_name }} vs {{ prediction.championship }} - Predicted: {{ prediction.success }}</li>
+        {% empty %}
+            <li>No recent predictions available.</li>
+        {% endfor %}
+    </ul>
+
+  <h2>Manage Your Profile:</h2>
+<a href="{% url 'predictor:profile_edit' %}">Edit Profile</a>
+<br>
+<a href="{% url 'predictor:user_dashboard' %}">Go to User Dashboard</a>
+<br>
+<a href="{% url 'predictor:home' %}">Back to Home</a>
+
+<form method="POST" action="{% url 'predictor:logout' %}">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+</form>
+
+</body>
+</html>

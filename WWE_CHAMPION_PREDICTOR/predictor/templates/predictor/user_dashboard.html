@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .dashboard-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        p {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form label {
+            display: block;
+            margin: 15px 0 5px;
+        }
+
+        form input[type="text"],
+        form select,
+        form input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .radio-group {
+            margin-bottom: 15px;
+        }
+
+        .radio-group label {
+            display: inline-block;
+            margin-right: 15px;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            margin-top: 30px;
+            background-color: #e6ffe6;
+            padding: 15px;
+            border-left: 5px solid #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+    <h1>User Dashboard</h1>
+    <p>Welcome, {{ user.username }}</p>
+
+    <p><a href="{% url 'predictor:user_panel' %}">Go to User Panel</a></p>
+
+    <p>Make your prediction below:</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+    
+    {% if result %}
+        <p>{{ result }}</p>
+    {% endif %}
+
+{% if error %}
+  <div class="alert alert-danger">
+    {{ error }}
+  </div>
+{% else %}
+  <!-- Render the results -->
+  <p>Results: {{ results }}</p>
+{% endif %}
+{% if results %}
+    <h1>Results for {{ results.wrestler_name }}</h1>
+
+    <ul>
+        <li><strong>Belts Won:</strong> {{ results.belts }}</li>
+        <li><strong>Total Reigns:</strong> {{ results.total_reigns }}</li>
+        <li><strong>Total Reign Length:</strong> {{ results.total_reign_length }} days</li>
+        <li><strong>Average Reign Duration:</strong> {{ results.average_reign_duration }} days</li>
+        <li><strong>Longest Reign:</strong> {{ results.longest_reign }} days</li>
+        <li><strong>Shortest Reign:</strong> {{ results.shortest_reign }} days</li>
+        <li><strong>First Title Win:</strong> {{ results.first_title_win }}</li>
+        <li><strong>Most Recent Title Win:</strong> {{ results.most_recent_title_win }}</li>
+        <li><strong>Career Span:</strong> {{ results.career_span }}</li>
+    </ul>
+{% else %}
+    <h2>No results available.</h2>
+    <p>Please return to the dashboard and submit a new prediction.</p>
+{% endif %}
+
+
+</div>
+
+</body>
+</html>

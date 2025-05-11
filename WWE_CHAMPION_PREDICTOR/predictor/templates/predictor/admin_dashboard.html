@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ site_title }}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .user-info {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .stats div {
+            width: 23%;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats div h2 {
+            margin: 10px 0;
+            font-size: 22px;
+            color: #333;
+        }
+
+        .stats div p {
+            font-size: 18px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .chart-container {
+            margin-top: 40px;
+            max-width: 900px;
+            margin: 40px auto;
+        }
+
+        .logout-btn-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        button {
+            padding: 12px 25px;
+            background-color: #d9534f;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #c9302c;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Display logged-in user's name -->
+        <div class="user-info">
+            <p>Welcome, {{ user.username }}!</p>  <!-- This is where the logged-in user's name appears -->
+        </div>
+
+        <h1>{{ site_header }}</h1>
+
+        <!-- Stats Section -->
+        <div class="stats">
+            <div>
+                <h2>Total Predictions</h2>
+                <p>{{ total_predictions }}</p>
+            </div>
+            <div>
+                <h2>Successful Predictions</h2>
+                <p>{{ successful_predictions }}</p>
+            </div>
+            <div>
+                <h2>Prediction Success Rate</h2>
+                <p>{{ success_rate }}%</p>
+            </div>
+            <div>
+                <h2>Wrestlers with Most Predictions</h2>
+                <p>{{ wrestler_data|length }} Wrestlers</p>
+            </div>
+        </div>
+
+        <!-- Prediction Success Rate Section -->
+        <p><strong>Prediction Success Rate: {{ success_rate }}%</strong></p>
+
+        <!-- Display the prediction success rate -->
+        {% if wrestler_data %}
+            <div class="chart-container">
+                <canvas id="predictionChart" width="400" height="200"></canvas>
+            </div>
+        {% else %}
+            <p>No data found for wrestler predictions.</p>
+        {% endif %}
+
+        <!-- Logout Form -->
+        <div class="logout-btn-container">
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+        </div>
+
+        <!-- Chart.js Script -->
+        <script>
+            // Get the data from Django context and parse it into a format that JavaScript can use
+            var wrestlerData = JSON.parse('{{ wrestler_data|escapejs }}');
+            var successRate = "{{ success_rate|default:0 }}";
+            
+            // Prepare the chart data
+            var labels = wrestlerData.map(function (data) {
+                return data.wrestler_name;
+            });
+
+            var predictions = wrestlerData.map(function (data) {
+                return data.total_predictions;
+            });
+
+            var ctx = document.getElementById('predictionChart').getContext('2d');
+            var predictionChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels, // Wrestler names as the X-axis labels
+                    datasets: [{
+                        label: 'Total Predictions',
+                        data: predictions, // Data for total predictions
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        </script>
+    </div>
+</body>
+
+</html>

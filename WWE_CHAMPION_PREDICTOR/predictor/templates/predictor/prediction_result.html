@@ -1,0 +1,28 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+    <h2>{{ message }}</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit Prediction</button>
+    </form>
+
+    {% if results %}
+        {% if results|length > 0 %}
+            <h3>Prediction Results:</h3>
+            {% for r in results %}
+                <div>
+                    <strong>{{ r.wrestler_name }}</strong> - {{ r.belts }} ({{ r.total_reigns }} reigns)
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No results found.</p>
+        {% endif %}
+    {% elif error %}
+        <p style="color: red;">{{ error }}</p>
+    {% else %}
+        <p>No results found.</p>
+    {% endif %}
+{% endblock %}
